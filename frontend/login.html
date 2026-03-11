@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tourist Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Tourist Login</h2>
+
+<div class="login-box">
+
+<input type="text" id="name" placeholder="Enter Name">
+
+<input type="text" id="passport" placeholder="Enter Passport ID">
+
+<button onclick="login()">Login</button>
+
+</div>
+
+<script>
+
+function login(){
+
+    var name = document.getElementById("name").value
+    var passport = document.getElementById("passport").value
+
+    if(name=="" || passport=="")
+    {
+        alert("Please enter all fields")
+        return
+    }
+
+    fetch("http://127.0.0.1:8000/register?name="+name+"&passport="+passport)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert("Login Successful\nDigital ID: "+data.digital_id)
+
+        localStorage.setItem("tourist_id",data.digital_id)
+
+        window.location.href="dashboard.html"
+
+    })
+
+    .catch(error => {
+
+        alert("Server Error")
+
+    })
+
+}
+
+</script>
+
+</body>
+
+</html>

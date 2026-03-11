@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h2>Tourist Location Map</h2>
+
+<div id="map" style="height:400px;width:600px"></div>
+
+<script>
+
+function initMap(){
+
+var location={lat:13.0827,lng:80.2707}
+
+var map=new google.maps.Map(document.getElementById("map"),{
+zoom:10,
+center:location
+})
+
+var marker=new google.maps.Marker({
+position:location,
+map:map
+})
+
+}
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+
+</body>
+
+</html>

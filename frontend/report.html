@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h2>Report Incident</h2>
+
+<input type="text" id="tourist" placeholder="Tourist ID">
+
+<input type="text" id="desc" placeholder="Description">
+
+<button onclick="report()">Submit</button>
+
+<script>
+
+function report(){
+
+var id=document.getElementById("tourist").value
+var desc=document.getElementById("desc").value
+
+fetch("http://127.0.0.1:8000/report?tourist_id="+id+"&description="+desc+"&lat=0&lon=0")
+
+.then(res=>res.json())
+
+.then(data=>alert(data.message))
+
+}
+
+</script>
+
+</body>
+
+</html>

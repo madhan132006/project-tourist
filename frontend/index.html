@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Tourist Safety</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Tourist Registration</h2>
+
+<input type="text" id="name" placeholder="Name">
+<input type="text" id="passport" placeholder="Passport">
+
+<button onclick="register()">Register</button>
+
+<script>
+
+function register(){
+
+var name=document.getElementById("name").value
+var passport=document.getElementById("passport").value
+
+fetch("http://127.0.0.1:8000/register?name="+name+"&passport="+passport)
+
+.then(res=>res.json())
+
+.then(data=>alert(data.message+" "+data.digital_id))
+
+}
+
+</script>
+
+</body>
+</html>
