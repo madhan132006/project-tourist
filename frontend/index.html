@@ -1,36 +1,160 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<title>Tourist Safety</title>
+
+<title>Smart Tourist Safety System</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+/* BACKGROUND */
+
+.hero{
+
+height:100vh;
+
+background:
+linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+url("https://images.unsplash.com/photo-1501785888041-af3ef285b470");
+
+background-size:cover;
+background-position:center;
+
+display:flex;
+flex-direction:column;
+}
+
+/* NAVBAR */
+
+header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:20px 60px;
+color:white;
+
+}
+
+header h2{
+font-size:26px;
+}
+
+nav a{
+
+margin-left:25px;
+text-decoration:none;
+color:white;
+font-weight:bold;
+font-size:16px;
+
+}
+
+nav a:hover{
+color:#38bdf8;
+}
+
+/* CENTER CONTENT */
+
+.content{
+
+flex:1;
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+
+text-align:center;
+color:white;
+
+}
+
+.content h1{
+
+font-size:55px;
+margin-bottom:10px;
+
+}
+
+.content p{
+
+font-size:20px;
+margin-bottom:35px;
+
+}
+
+.btn{
+
+padding:15px 35px;
+
+background:#38bdf8;
+border:none;
+border-radius:30px;
+
+font-size:18px;
+color:white;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.btn:hover{
+
+background:#0284c7;
+transform:scale(1.05);
+
+}
+
+</style>
+
 </head>
 
 <body>
 
-<h2>Tourist Registration</h2>
+<div class="hero">
 
-<input type="text" id="name" placeholder="Name">
-<input type="text" id="passport" placeholder="Passport">
+<header>
 
-<button onclick="register()">Register</button>
+<h2>🌍 Tourist Safety</h2>
 
-<script>
+<nav>
 
-function register(){
+<a href="index.html">Home</a>
+<a href="login.html">Login</a>
+<a href="dashboard.html">Dashboard</a>
+<a href="map.html">Map</a>
+<a href="report.html">Report</a>
+<a href="sos.html">SOS</a>
 
-var name=document.getElementById("name").value
-var passport=document.getElementById("passport").value
+</nav>
 
-fetch("http://127.0.0.1:8000/register?name="+name+"&passport="+passport)
+</header>
 
-.then(res=>res.json())
 
-.then(data=>alert(data.message+" "+data.digital_id))
+<div class="content">
 
-}
+<h1>Smart Tourist Safety System</h1>
 
-</script>
+<p>
+AI Monitoring • Geo-Fencing • Blockchain Security
+</p>
+
+<a href="login.html">
+<button class="btn">Get Started</button>
+</a>
+
+</div>
+
+</div>
 
 </body>
 </html>

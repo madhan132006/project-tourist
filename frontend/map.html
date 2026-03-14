@@ -1,34 +1,290 @@
 <!DOCTYPE html>
 <html>
+<head>
+
+<title>Tourist Safety Map</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+header{
+background:#020617;
+padding:15px;
+text-align:center;
+color:#38bdf8;
+font-size:22px;
+}
+
+/* MAP */
+
+#map{
+height:90vh;
+width:100%;
+}
+
+/* LOCATION BOX */
+
+.location-box{
+position:absolute;
+top:80px;
+left:20px;
+background:black;
+padding:10px 15px;
+border-radius:6px;
+z-index:1000;
+}
+
+/* REPORT BUTTON */
+
+.report-btn{
+position:absolute;
+bottom:40px;
+right:30px;
+background:#2563eb;
+color:white;
+border:none;
+padding:14px 20px;
+border-radius:10px;
+cursor:pointer;
+z-index:1000;
+font-size:16px;
+}
+
+/* REPORT MODAL */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+justify-content:center;
+align-items:center;
+z-index:2000;
+}
+
+/* FORM */
+
+.form-box{
+background:#111;
+padding:30px;
+border-radius:10px;
+width:350px;
+}
+
+.form-box h2{
+text-align:center;
+margin-bottom:15px;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:5px;
+}
+
+textarea{
+height:80px;
+resize:none;
+}
+
+.submit-btn{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px;
+cursor:pointer;
+}
+
+.close{
+color:red;
+cursor:pointer;
+float:right;
+font-size:20px;
+}
+
+</style>
+
+</head>
 
 <body>
 
-<h2>Tourist Location Map</h2>
+<header>
+🌍 Tourist Safety Map
+</header>
 
-<div id="map" style="height:400px;width:600px"></div>
+<div id="map"></div>
+
+<div class="location-box" id="placeName">
+📍 Detecting location...
+</div>
+
+<button class="report-btn" onclick="openReport()">⚠ Report</button>
+
+
+<!-- REPORT POPUP -->
+
+<div class="modal" id="reportModal">
+
+<div class="form-box">
+
+<span class="close" onclick="closeReport()">✖</span>
+
+<h2>Report Incident</h2>
+
+<form id="reportForm">
+
+<select required>
+<option value="">Incident Type</option>
+<option>Accident</option>
+<option>Theft</option>
+<option>Harassment</option>
+<option>Medical Emergency</option>
+</select>
+
+<textarea placeholder="Describe incident..." required></textarea>
+
+<input type="file">
+
+<button class="submit-btn">Submit</button>
+
+</form>
+
+<p id="reportLocation"></p>
+
+</div>
+
+</div>
+
 
 <script>
 
-function initMap(){
+/* CREATE MAP */
 
-var location={lat:13.0827,lng:80.2707}
+var map = L.map('map').setView([20.5937,78.9629],5);
 
-var map=new google.maps.Map(document.getElementById("map"),{
-zoom:10,
-center:location
-})
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
+}).addTo(map);
 
-var marker=new google.maps.Marker({
-position:location,
-map:map
-})
+
+/* LIVE LOCATION */
+
+let marker;
+let lat,lon;
+
+if(navigator.geolocation){
+
+navigator.geolocation.watchPosition(function(position){
+
+lat = position.coords.latitude;
+lon = position.coords.longitude;
+
+/* REMOVE OLD MARKER */
+
+if(marker){
+map.removeLayer(marker);
+}
+
+/* NEW MARKER */
+
+marker = L.marker([lat,lon]).addTo(map)
+
+.bindPopup("📍 You are here")
+.openPopup();
+
+/* ZOOM */
+
+map.setView([lat,lon],15);
+
+/* GET PLACE NAME */
+
+fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+let address=data.address;
+
+let place=
+
+address.city ||
+address.town ||
+address.village ||
+address.state ||
+"Unknown";
+
+document.getElementById("placeName").innerHTML="📍 "+place;
+
+document.getElementById("reportLocation").innerHTML=
+
+"Location: "+place+" ("+lat.toFixed(4)+","+lon.toFixed(4)+")";
+
+});
+
+});
 
 }
 
+
+/* REPORT POPUP */
+
+function openReport(){
+
+document.getElementById("reportModal").style.display="flex";
+
+}
+
+function closeReport(){
+
+document.getElementById("reportModal").style.display="none";
+
+}
+
+
+/* SUBMIT */
+
+document.getElementById("reportForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+let incident={
+
+type:document.querySelector("select").value,
+
+description:document.querySelector("textarea").value,
+
+latitude:lat,
+
+longitude:lon,
+
+time:new Date().toISOString()
+
+};
+
+console.log(incident);
+
+alert("✅ Incident Report Submitted");
+
+closeReport();
+
+});
+
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
-
 </body>
-
 </html>

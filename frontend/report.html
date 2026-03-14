@@ -1,33 +1,210 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Tourist Safety - Fullscreen Report + Blockchain</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-<body>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-<h2>Report Incident</h2>
-
-<input type="text" id="tourist" placeholder="Tourist ID">
-
-<input type="text" id="desc" placeholder="Description">
-
-<button onclick="report()">Submit</button>
-
-<script>
-
-function report(){
-
-var id=document.getElementById("tourist").value
-var desc=document.getElementById("desc").value
-
-fetch("http://127.0.0.1:8000/report?tourist_id="+id+"&description="+desc+"&lat=0&lon=0")
-
-.then(res=>res.json())
-
-.then(data=>alert(data.message))
-
+<style>
+body, html{
+  margin:0; padding:0; height:100%; font-family:'Poppins',sans-serif;
+}
+#map{
+  height:100%; width:100%;
 }
 
+/* Floating buttons */
+.floating-btn{
+  position:fixed; bottom:30px; right:30px;
+  display:flex; flex-direction:column; gap:15px;
+  z-index:1000;
+}
+.btn{
+  width:60px; height:60px; border:none; border-radius:50%;
+  color:white; font-size:16px; cursor:pointer;
+  box-shadow:0 4px 8px rgba(0,0,0,0.3);
+  display:flex; align-items:center; justify-content:center;
+  transition: transform 0.2s;
+}
+.btn:hover{ transform:scale(1.1); }
+.btn-sos{ background:red; }
+.btn-report{ background:#3b82f6; }
+
+/* Fullscreen Modal Design */
+.modal{
+  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.9); justify-content:center; align-items:center; z-index:1000;
+}
+.modal-content{
+  width:100%; height:100%; overflow-y:auto; padding:40px; background:#0f172a;
+  color:white; position:relative; box-sizing:border-box;
+}
+.modal-content h2{
+  text-align:center; font-size:32px; color:#3b82f6; margin-bottom:30px;
+}
+.modal-content input, .modal-content select, .modal-content textarea{
+  width:100%; margin:15px 0; padding:15px; border-radius:10px; border:none; background:#1e293b; color:white; font-size:16px;
+}
+.modal-content button.submit{
+  width:100%; padding:18px; border:none; border-radius:12px; background:#3b82f6; font-size:18px; font-weight:600; cursor:pointer; transition:0.3s;
+}
+.modal-content button.submit:hover{ background:#2563eb; transform:scale(1.03);}
+.close{
+  position:absolute; top:20px; right:25px; font-size:28px; cursor:pointer; color:white;
+}
+#fileList{ font-size:14px; margin-top:5px; }
+</style>
+
+<!-- Web3.js -->
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Floating Buttons -->
+<div class="floating-btn">
+  <button class="btn btn-sos" id="sosBtn">SOS</button>
+  <button class="btn btn-report" id="reportBtn">📝</button>
+</div>
+
+<!-- Fullscreen Report Modal -->
+<div class="modal" id="reportModal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2>Report Incident</h2>
+    <form id="reportForm">
+      <label>Incident Type</label>
+      <select name="type" required>
+        <option value="">Select</option>
+        <option value="Accident">Accident</option>
+        <option value="Theft">Theft</option>
+        <option value="Health">Health</option>
+        <option value="Fire">Fire</option>
+      </select>
+
+      <label>Description</label>
+      <textarea name="description" rows="5" placeholder="Describe the incident..." required></textarea>
+
+      <label>Upload Proof (Images/Videos)</label>
+      <input type="file" id="proofFiles" name="proof" accept="image/*,video/*" multiple>
+      <div id="fileList">No files selected</div>
+
+      <input type="hidden" name="latitude">
+      <input type="hidden" name="longitude">
+
+      <button type="submit" class="submit">Submit Incident</button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+background:#3b82f6; color:white; padding:15px 25px; border-radius:10px; opacity:0; z-index:2000; transition:0.5s;">Toast</div>
+
+<script>
+// Leaflet Map
+const map = L.map('map').setView([13.0827, 80.2707], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ maxZoom:19 }).addTo(map);
+
+let userMarker;
+function updateUserLocation(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      if(!userMarker){
+        userMarker = L.marker([lat,lng]).addTo(map).bindPopup("You are here").openPopup();
+      } else {
+        userMarker.setLatLng([lat,lng]);
+      }
+      map.setView([lat,lng]);
+      document.querySelector('input[name="latitude"]').value = lat;
+      document.querySelector('input[name="longitude"]').value = lng;
+    });
+  }
+}
+updateUserLocation();
+setInterval(updateUserLocation,5000);
+
+// Toast
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = 1;
+  setTimeout(()=>{ t.style.opacity = 0; },2500);
+}
+
+// Modal controls
+const reportModal = document.getElementById('reportModal');
+const reportBtn = document.getElementById('reportBtn');
+const closeModal = document.getElementById('closeModal');
+reportBtn.onclick = ()=> reportModal.style.display='flex';
+closeModal.onclick = ()=> reportModal.style.display='none';
+
+// File list preview
+const proofFiles = document.getElementById('proofFiles');
+const fileList = document.getElementById('fileList');
+proofFiles.addEventListener('change', ()=>{
+  const names = Array.from(proofFiles.files).map(f=>f.name);
+  fileList.textContent = names.length ? names.join(', ') : "No files selected";
+});
+
+// Blockchain connection
+let web3;
+let account;
+async function connectBlockchain(){
+  if(window.ethereum){
+    web3 = new Web3(window.ethereum);
+    await window.ethereum.request({ method:'eth_requestAccounts' });
+    const accounts = await web3.eth.getAccounts();
+    account = accounts[0];
+    console.log("Blockchain account:", account);
+  } else { alert("Metamask not found!"); }
+}
+connectBlockchain();
+
+// Send report hash to blockchain
+async function sendToBlockchain(data){
+  const hash = web3.utils.sha3(JSON.stringify(data)+new Date().toISOString());
+  console.log("Incident hash:", hash);
+  showToast("Report saved on blockchain! Hash: "+hash);
+}
+
+// Form submit
+document.getElementById('reportForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const formData = new FormData(this);
+  const incidentData = Object.fromEntries(formData.entries());
+  incidentData.files = Array.from(proofFiles.files).map(f=>f.name);
+  incidentData.user = account || "anonymous";
+  incidentData.timestamp = new Date().toISOString();
+  await sendToBlockchain(incidentData);
+  this.reset(); fileList.textContent="No files selected";
+  reportModal.style.display='none';
+});
+
+// SOS Button
+document.getElementById('sosBtn').addEventListener('click', async function(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(async function(pos){
+      const data = {
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+        message:"I am in danger! Need immediate help.",
+        user:account||"anonymous",
+        timestamp:new Date().toISOString()
+      };
+      await sendToBlockchain(data);
+      showToast("SOS sent & stored on blockchain!");
+    });
+  } else { alert("Geolocation not supported"); }
+});
 </script>
-
 </body>
-
 </html>

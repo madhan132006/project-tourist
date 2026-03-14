@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Emergency SOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  body{
+    margin:0; padding:0; font-family:'Poppins',sans-serif;
+    height:100vh; display:flex; justify-content:center; align-items:center;
+    background: radial-gradient(circle, #ff1e1e, #800000);
+    color:white;
+  }
+  .sos-container{
+    text-align:center; 
+    background: rgba(255,255,255,0.05);
+    padding:50px 40px; border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .sos-container:hover{
+    transform: translateY(-5px);
+    box-shadow:0 15px 35px rgba(0,0,0,0.6);
+  }
+  h1{
+    font-size:48px; color:#fff;
+    margin-bottom:40px;
+    letter-spacing:2px;
+    text-shadow:0 0 15px #ff4c4c;
+  }
+  button{
+    width:150px; height:150px;
+    border:none; border-radius:50%;
+    background: linear-gradient(135deg, #ff0000, #ff4c4c);
+    color:white; font-size:20px; font-weight:600;
+    cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  button:hover{
+    transform: scale(1.1);
+    box-shadow:0 12px 25px rgba(0,0,0,0.7);
+  }
+  p{
+    margin-top:20px; font-size:16px;
+    color:#ffcccc;
+  }
+</style>
+</head>
+<body>
+
+<div class="sos-container">
+  <h1>EMERGENCY SOS</h1>
+  <button id="sosBtn">SOS</button>
+  <p>Click the button to send your location and request immediate help</p>
+</div>
+
+<script>
+document.getElementById('sosBtn').addEventListener('click', function(){
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(function(position){
+            const data = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                message: "I am in danger! Please help me immediately."
+            };
+            console.log("SOS Data:", data);
+            alert("SOS Sent Successfully!");
+            // TODO: send data to backend API here
+        }, function(error){
+            alert("Error fetching location: " + error.message);
+        });
+    } else {
+        alert("Geolocation not supported on this device");
+    }
+});
+</script>
+
+</body>
+</html>
