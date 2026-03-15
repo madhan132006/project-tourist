@@ -1,8 +1,6 @@
 from flask import Blueprint
-from controllers.incident_controller import report_incident, get_incidents
-from middleware.auth_middleware import require_auth
+from controllers.incident_controller import report_incident
 
-incident_bp = Blueprint('incidents', __name__)
+incident_bp = Blueprint("incident_bp", __name__)
 
-incident_bp.route('/', methods=['POST'])(require_auth()(report_incident))
-incident_bp.route('/', methods=['GET'])(require_auth(['admin'])(get_incidents))
+incident_bp.route("/report", methods=["POST"])(report_incident)

@@ -1,19 +1,26 @@
 from flask import request, jsonify
-from services.incident_service import IncidentService
-from models.incident_model import IncidentModel
+from utils.db_connection import get_db_connection
 
 def report_incident():
-    data = request.get_json()
-    tourist_name = data.get('tourist_name')
-    location = data.get('location')
-    description = data.get('description')
-    
-    if not all([tourist_name, location, description]):
-        return jsonify({'error': 'Missing required fields'}), 400
-        
-    result = IncidentService.report_incident(tourist_name, location, description)
-    return jsonify(result), 201
 
-def get_incidents():
-    incidents = IncidentModel.get_all_incidents()
-    return jsonify(incidents), 200
+    data = request.json
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO incidents
+    (type,description,location,latitude,longitude,status)
+    VALUES (?,?,?,?,?,'active')
+    """,(
+        data["type"],
+        data["description"],
+        data["location"],
+        data["latitude"],
+        data["longitude"]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message":"Incident stored successfully"})

@@ -5,6 +5,7 @@
 <title>Tourist Safety Map</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
@@ -35,9 +36,9 @@ width:100%;
 
 .location-box{
 position:absolute;
-top:80px;
+top:70px;
 left:20px;
-background:black;
+background:#000;
 padding:10px 15px;
 border-radius:6px;
 z-index:1000;
@@ -59,7 +60,7 @@ z-index:1000;
 font-size:16px;
 }
 
-/* REPORT MODAL */
+/* MODAL */
 
 .modal{
 display:none;
@@ -74,18 +75,11 @@ align-items:center;
 z-index:2000;
 }
 
-/* FORM */
-
 .form-box{
 background:#111;
 padding:30px;
 border-radius:10px;
 width:350px;
-}
-
-.form-box h2{
-text-align:center;
-margin-bottom:15px;
 }
 
 input,select,textarea{
@@ -98,7 +92,6 @@ border-radius:5px;
 
 textarea{
 height:80px;
-resize:none;
 }
 
 .submit-btn{
@@ -135,7 +128,7 @@ font-size:20px;
 <button class="report-btn" onclick="openReport()">⚠ Report</button>
 
 
-<!-- REPORT POPUP -->
+<!-- REPORT MODAL -->
 
 <div class="modal" id="reportModal">
 
@@ -159,11 +152,11 @@ font-size:20px;
 
 <input type="file">
 
+<input id="locationField" readonly>
+
 <button class="submit-btn">Submit</button>
 
 </form>
-
-<p id="reportLocation"></p>
 
 </div>
 
@@ -174,17 +167,18 @@ font-size:20px;
 
 /* CREATE MAP */
 
-var map = L.map('map').setView([20.5937,78.9629],5);
+var map = L.map('map').setView([11.1271,78.6569],7);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 maxZoom:19
 }).addTo(map);
 
 
-/* LIVE LOCATION */
-
 let marker;
 let lat,lon;
+
+
+/* GET USER LOCATION */
 
 if(navigator.geolocation){
 
@@ -199,18 +193,16 @@ if(marker){
 map.removeLayer(marker);
 }
 
-/* NEW MARKER */
+/* ADD NEW MARKER */
 
 marker = L.marker([lat,lon]).addTo(map)
-
-.bindPopup("📍 You are here")
+.bindPopup("📍 Your Location")
 .openPopup();
 
-/* ZOOM */
+map.setView([lat,lon],16);
 
-map.setView([lat,lon],15);
 
-/* GET PLACE NAME */
+/* GET VILLAGE / CITY NAME */
 
 fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
 
@@ -220,43 +212,48 @@ fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=
 
 let address=data.address;
 
-let place=
-
-address.city ||
-address.town ||
+let place =
 address.village ||
+address.town ||
+address.city ||
+address.county ||
 address.state ||
-"Unknown";
+"Unknown place";
 
 document.getElementById("placeName").innerHTML="📍 "+place;
 
-document.getElementById("reportLocation").innerHTML=
-
-"Location: "+place+" ("+lat.toFixed(4)+","+lon.toFixed(4)+")";
+document.getElementById("locationField").value=
+place+" ("+lat.toFixed(5)+","+lon.toFixed(5)+")";
 
 });
 
+},
+function(error){
+
+alert("Location access denied. Please allow GPS.");
+
+},
+{
+enableHighAccuracy:true
 });
 
 }
 
 
-/* REPORT POPUP */
+/* OPEN REPORT */
 
 function openReport(){
-
 document.getElementById("reportModal").style.display="flex";
-
 }
+
+/* CLOSE REPORT */
 
 function closeReport(){
-
 document.getElementById("reportModal").style.display="none";
-
 }
 
 
-/* SUBMIT */
+/* REPORT SUBMIT */
 
 document.getElementById("reportForm").addEventListener("submit",function(e){
 
@@ -268,15 +265,13 @@ type:document.querySelector("select").value,
 
 description:document.querySelector("textarea").value,
 
-latitude:lat,
-
-longitude:lon,
+location:document.getElementById("locationField").value,
 
 time:new Date().toISOString()
 
 };
 
-console.log(incident);
+console.log("Incident Data:",incident);
 
 alert("✅ Incident Report Submitted");
 

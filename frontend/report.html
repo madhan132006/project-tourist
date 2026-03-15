@@ -208,3 +208,28 @@ document.getElementById('sosBtn').addEventListener('click', async function(){
 </script>
 </body>
 </html>
+<script>
+
+function submitReport(){
+
+let incidents = JSON.parse(localStorage.getItem("incidents")) || []
+
+let newIncident = {
+type: document.getElementById("type").value,
+description: document.getElementById("description").value,
+location: document.getElementById("location").value,
+time: new Date().toLocaleString()
+}
+
+incidents.push(newIncident)
+
+localStorage.setItem("incidents", JSON.stringify(incidents))
+
+alert("Incident Reported Successfully")
+
+window.location.href="dashboard.html"
+
+}
+
+</script>
+<button onclick="submitReport()">Submit Report</button>

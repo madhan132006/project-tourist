@@ -1,11 +1,24 @@
 from flask import jsonify
-from models.alert_model import AlertModel
-from services.ai_prediction_service import AIPredictionService
+from utils.db_connection import get_db_connection
 
-def get_alerts():
-    alerts = AlertModel.get_active_alerts()
-    high_risk_zones = AIPredictionService.predict_risk_areas()
+def dashboard_counts():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM incidents")
+    incidents = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM users")
+    tourists = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM incidents WHERE status='active'")
+    alerts = cursor.fetchone()[0]
+
+    conn.close()
+
     return jsonify({
-        'active_alerts': alerts,
-        'ai_predictions': high_risk_zones
-    }), 200
+        "totalIncidents": incidents,
+        "totalTourists": tourists,
+        "activeAlerts": alerts
+    })
