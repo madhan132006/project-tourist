@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Incident - Tourist Safety</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">SmartSafe Tourist</div>
+        <nav>
+            <a href="/report_incident.html" class="active">Report Incident</a>
+            <a href="/feedback.html">Feedback</a>
+            <button class="btn sos-btn" title="Emergency Ping">SOS</button>
+            <a href="#" id="updateLocationBtn">Ping My Location</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 600px; padding-top: 3rem;">
+        <div class="glass-panel">
+            <h2>Report an Emergency/Incident</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Your report will be securely recorded and immediately notify emergency personnel.</p>
+            
+            <form id="incidentForm">
+                <label>Full Name</label>
+                <input type="text" id="tName" placeholder="John Doe" required>
+                
+                <label>Current Location (Landmark or Zone)</label>
+                <input type="text" id="tLoc" placeholder="e.g. Near the main waterfall" required>
+                
+                <label>Description of Incident</label>
+                <textarea id="tDesc" rows="4" placeholder="Describe what happened..." required></textarea>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem;">Submit Secure Report</button>
+            </form>
+            
+            <div id="resultBox" style="display: none; margin-top: 2rem; background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--success);">
+                <h4 style="color: var(--success); margin-bottom: 1rem;">Incident Logged Successfully</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #a7f3d0;"><strong>Secured with Blockchain Hash:</strong></p>
+                <div class="hash-text" id="resHash" style="margin-bottom: 1rem; color: #6ee7b7; font-size: 1rem;"></div>
+                <p style="font-size: 0.85rem; color: var(--text-main);">Emergency services have been notified. Avoid unnecessary movement.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.getElementById('incidentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                tourist_name: document.getElementById('tName').value,
+                location: document.getElementById('tLoc').value,
+                description: document.getElementById('tDesc').value
+            };
+            
+            try {
+                const data = await apiCall('/incidents/', 'POST', payload);
+                document.getElementById('incidentForm').reset();
+                document.getElementById('resultBox').style.display = 'block';
+                document.getElementById('resHash').innerText = data.blockchain_hash;
+                showToast("Incident secured. Help has been notified.");
+            } catch (err) {}
+        });
+
+        document.getElementById('updateLocationBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    try {
+                        // In reality you may inject the tourist_id based on login, mapped backend via JWT
+                        await apiCall('/locations/', 'POST', {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        });
+                        showToast("Location updated successfully.");
+                    } catch (err) {}
+                }, () => {
+                   showToast("Unable to fetch location. Please check browser permissions.", true); 
+                });
+            } else {
+                showToast("Geolocation is not supported by your browser", true);
+            }
+        });
+    </script>
+</body>
+</html>

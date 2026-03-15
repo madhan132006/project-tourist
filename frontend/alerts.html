@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts & AI Insights - Tourist Safety</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">SmartSafe Admin</div>
+        <nav>
+            <a href="/dashboard.html">Dashboard</a>
+            <a href="/tourist_map.html">Live Map</a>
+            <a href="/alerts.html" class="active">Alerts & AI</a>
+            <a href="/feedback.html">Feedback</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container" style="padding-top: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+            <div>
+                <h2 style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: var(--danger);">●</span> Active Alerts
+                </h2>
+                <div class="glass-panel" id="alertsList" style="max-height: 600px; overflow-y: auto;">
+                    <div class="loader" id="alertsLoader" style="display: block;"></div>
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+            
+            <div>
+                <h2 style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: var(--primary-color);">✨</span> AI Risk Predictions
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Based on historical incident frequency</p>
+                <div class="glass-panel" id="aiInsightsList" style="max-height: 600px; overflow-y: auto;">
+                    <div class="loader" id="aiLoader" style="display: block;"></div>
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function loadAlerts() {
+            try {
+                const data = await apiCall('/alerts/');
+                
+                const alertsList = document.getElementById('alertsList');
+                document.getElementById('alertsLoader').style.display = 'none';
+                alertsList.innerHTML = '';
+                
+                if (data.active_alerts.length === 0) {
+                    alertsList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No active alerts at this time.</p>';
+                } else {
+                    data.active_alerts.forEach(alert => {
+                        const div = document.createElement('div');
+                        div.style.padding = '1.5rem';
+                        div.style.borderBottom = '1px solid var(--glass-border)';
+                        div.style.marginBottom = '1rem';
+                        div.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span class="badge ${alert.severity === 'High' ? 'badge-high' : 'badge-medium'}">${alert.severity} Priority</span>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">${new Date(alert.timestamp).toLocaleString()}</span>
+                            </div>
+                            <p style="font-size: 1.1rem; line-height: 1.5;">${alert.message}</p>
+                        `;
+                        alertsList.appendChild(div);
+                    });
+                }
+                
+                const aiList = document.getElementById('aiInsightsList');
+                document.getElementById('aiLoader').style.display = 'none';
+                aiList.innerHTML = '';
+                
+                if (data.ai_predictions.length === 0) {
+                    aiList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Not enough data for AI predictions yet.</p>';
+                } else {
+                    data.ai_predictions.forEach(pred => {
+                        const div = document.createElement('div');
+                        div.style.padding = '1.5rem';
+                        div.style.background = 'rgba(255,255,255,0.02)';
+                        div.style.borderRadius = '8px';
+                        div.style.marginBottom = '1rem';
+                        div.style.borderLeft = pred.risk_level === 'High' ? '4px solid var(--danger)' : '4px solid var(--accent-color)';
+                        
+                        div.innerHTML = `
+                            <h4 style="margin-bottom: 0.5rem;">Location: ${pred.location}</h4>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.9rem; color: var(--text-muted);">Historical Incidents: <strong>${pred.incidents}</strong></span>
+                                <span class="badge ${pred.risk_level === 'High' ? 'badge-high' : 'badge-medium'}">${pred.risk_level} Risk</span>
+                            </div>
+                        `;
+                        aiList.appendChild(div);
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadAlerts);
+    </script>
+</body>
+</html>

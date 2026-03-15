@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Tourist Safety</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">SmartSafe Tourist</div>
+        <nav>
+            <a href="/report_incident.html">Report Incident</a>
+            <a href="/feedback.html" class="active">Feedback</a>
+            <button class="btn sos-btn" title="Emergency Ping">SOS</button>
+            <a href="#" id="logoutBtn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 600px; padding-top: 3rem;">
+        <div class="glass-panel">
+            <h2>Share Your Feedback</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Help us improve the Smart Tourist Safety system by letting us know about your experience.</p>
+            
+            <form id="feedbackForm">
+                <label>Your Name</label>
+                <input type="text" id="fName" placeholder="John Doe" required>
+                
+                <label>Email Address</label>
+                <input type="email" id="fEmail" placeholder="john@example.com" required>
+                
+                <label>Your Feedback</label>
+                <textarea id="fMsg" rows="4" placeholder="How was the safety app? Did it help you?" required></textarea>
+                
+                <label>Rating (1 to 5)</label>
+                <select id="fRating" style="margin-bottom: 1.5rem; width: 100%; padding: 0.9rem; background: rgba(15,23,42,0.7); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                    <option value="5" style="color: black;">⭐⭐⭐⭐⭐ - Excellent</option>
+                    <option value="4" style="color: black;">⭐⭐⭐⭐ - Good</option>
+                    <option value="3" style="color: black;">⭐⭐⭐ - Average</option>
+                    <option value="2" style="color: black;">⭐⭐ - Needs Improvement</option>
+                    <option value="1" style="color: black;">⭐ - Poor</option>
+                </select>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem;">Submit Feedback</button>
+            </form>
+        </div>
+        
+        <div id="adminFeedback" style="display: none; margin-top: 3rem;">
+            <h3>Recent User Feedbacks</h3>
+            <div class="glass-panel" id="adminFeedbackList" style="max-height: 400px; overflow-y: auto;">
+                <!-- Populated if Admin -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('fName').value,
+                email: document.getElementById('fEmail').value,
+                message: document.getElementById('fMsg').value,
+                rating: document.getElementById('fRating').value
+            };
+            
+            try {
+                await apiCall('/feedback/', 'POST', payload);
+                document.getElementById('feedbackForm').reset();
+                showToast("Feedback submitted successfully. Thank you!");
+                loadAdminFeedback();
+            } catch (err) {}
+        });
+        
+        async function loadAdminFeedback() {
+            if (localStorage.getItem('role') === 'admin') {
+                document.getElementById('adminFeedback').style.display = 'block';
+                const list = document.getElementById('adminFeedbackList');
+                try {
+                    const data = await apiCall('/feedback/');
+                    list.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted); padding: 1rem;">No feedback left yet.</p>';
+                        return;
+                    }
+                    data.forEach(fb => {
+                        const stars = '⭐'.repeat(fb.rating);
+                        const card = document.createElement('div');
+                        card.style.borderBottom = '1px solid var(--glass-border)';
+                        card.style.padding = '1rem 0';
+                        card.innerHTML = `
+                            <strong>${fb.name}</strong> 
+                            <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 10px;">${fb.email}</span>
+                            <div style="margin: 0.5rem 0;">${stars}</div>
+                            <p style="font-size: 0.95rem;">"${fb.message}"</p>
+                        `;
+                        list.appendChild(card);
+                    });
+                } catch(e) {}
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadAdminFeedback);
+    </script>
+</body>
+</html>
