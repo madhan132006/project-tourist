@@ -1,41 +1,33 @@
-from utils.db_connection import get_db_connection
+import sqlite3
 
-conn = get_db_connection()
+conn = sqlite3.connect("backend/database/database.db")
 cursor = conn.cursor()
 
+# Table for dashboard counts
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS users(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-email TEXT,
-wallet_address TEXT,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS dashboard_stats (
+    id INTEGER PRIMARY KEY,
+    total_incidents INTEGER DEFAULT 0,
+    total_tourists INTEGER DEFAULT 0
 )
 """)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS incidents(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-type TEXT,
-description TEXT,
-location TEXT,
-latitude REAL,
-longitude REAL,
-status TEXT DEFAULT 'active',
-blockchain_hash TEXT,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-""")
+# Initialize if empty
+cursor.execute("SELECT COUNT(*) FROM dashboard_stats")
+if cursor.fetchone()[0] == 0:
+    cursor.execute("INSERT INTO dashboard_stats (total_incidents, total_tourists) VALUES (0,0)")
 
+# Table for locations
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS alerts(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-incident_id INTEGER,
-message TEXT,
-status TEXT DEFAULT 'active'
+CREATE TABLE IF NOT EXISTS locations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tourist_id TEXT,
+    latitude REAL,
+    longitude REAL,
+    timestamp TEXT
 )
 """)
 
 conn.commit()
 conn.close()
-
-print("Tables created successfully")
+print("Tables created and initialized successfully.")

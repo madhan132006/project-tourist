@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Tourist Dashboard</title>
+<title>Tourist Safety Dashboard</title>
 <style>
 body{
 margin:0;
@@ -14,7 +14,6 @@ background-repeat:no-repeat;
 height:100vh;
 color:#1f2937;
 }
-
 body::before{
 content:"";
 position:fixed;
@@ -25,7 +24,6 @@ height:100%;
 background:rgba(255,255,255,0.85);
 z-index:-1;
 }
-
 header{
 display:flex;
 justify-content:space-between;
@@ -36,129 +34,25 @@ color:white;
 box-shadow:0 4px 15px rgba(0,0,0,0.2);
 border-radius:0 0 10px 10px;
 }
-
-header h2{
-margin:0;
-font-size:24px;
-}
-
+header h2{margin:0;font-size:24px;}
 nav a{
-color:white;
-margin:0 12px;
-text-decoration:none;
-font-weight:bold;
-padding:6px 12px;
-border-radius:6px;
-transition:0.3s;
+color:white;margin:0 12px;text-decoration:none;font-weight:bold;padding:6px 12px;border-radius:6px;transition:0.3s;
 }
-
-nav a:hover{
-background:#1d4ed8;
-}
-
-.dashboard-container{
-text-align:center;
-padding:60px 20px;
-}
-
-/* STATS */
-.stats{
-display:flex;
-justify-content:center;
-gap:30px;
-margin-top:30px;
-flex-wrap:wrap;
-}
-
-.stat-box{
-background:white;
-padding:25px;
-border-radius:12px;
-width:200px;
-box-shadow:0 4px 15px rgba(0,0,0,0.2);
-transition:0.3s;
-}
-
-.stat-box:hover{
-transform:scale(1.05);
-}
-
-.stat-box h2{
-margin:10px 0;
-color:#2563eb;
-font-size:24px;
-}
-
-/* CARDS */
-.cards{
-display:flex;
-justify-content:center;
-gap:30px;
-margin-top:50px;
-flex-wrap:wrap;
-}
-
-.card{
-background:white;
-padding:30px;
-border-radius:12px;
-width:220px;
-cursor:pointer;
-transition:0.3s;
-box-shadow:0 4px 20px rgba(0,0,0,0.15);
-text-align:center;
-}
-
-.card:hover{
-transform:scale(1.05);
-background:#2563eb;
-color:white;
-}
-
-.card h3{
-margin-bottom:10px;
-}
-
-/* FEEDBACK FORM */
-#feedbackForm{
-max-width:600px;
-margin:50px auto;
-padding:30px;
-background:white;
-border-radius:15px;
-box-shadow:0 8px 30px rgba(0,0,0,0.1);
-text-align:center;
-display:none;
-}
-
-#feedbackForm h2{
-color:#2563eb;
-margin-bottom:20px;
-}
-
-#feedbackForm input, #feedbackForm textarea, #feedbackForm select{
-width:90%;
-padding:12px;
-margin:10px 0;
-border-radius:8px;
-border:1px solid #d1d5db;
-font-size:14px;
-}
-
-#feedbackForm button{
-padding:12px 25px;
-border:none;
-background:#2563eb;
-color:white;
-font-weight:bold;
-border-radius:8px;
-cursor:pointer;
-transition:0.3s;
-}
-
-#feedbackForm button:hover{
-background:#1d4ed8;
-}
+nav a:hover{background:#1d4ed8;}
+.dashboard-container{text-align:center;padding:60px 20px;}
+.stats{display:flex;justify-content:center;gap:30px;margin-top:30px;flex-wrap:wrap;}
+.stat-box{background:white;padding:25px;border-radius:12px;width:200px;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:0.3s;}
+.stat-box:hover{transform:scale(1.05);}
+.stat-box h2{margin:10px 0;color:#2563eb;font-size:24px;}
+.cards{display:flex;justify-content:center;gap:30px;margin-top:50px;flex-wrap:wrap;}
+.card{background:white;padding:30px;border-radius:12px;width:220px;cursor:pointer;transition:0.3s;box-shadow:0 4px 20px rgba(0,0,0,0.15);text-align:center;}
+.card:hover{transform:scale(1.05);background:#2563eb;color:white;}
+.card h3{margin-bottom:10px;}
+#feedbackForm{max-width:600px;margin:50px auto;padding:30px;background:white;border-radius:15px;box-shadow:0 8px 30px rgba(0,0,0,0.1);text-align:center;display:none;}
+#feedbackForm h2{color:#2563eb;margin-bottom:20px;}
+#feedbackForm input,#feedbackForm textarea,#feedbackForm select{width:90%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #d1d5db;font-size:14px;}
+#feedbackForm button{padding:12px 25px;border:none;background:#2563eb;color:white;font-weight:bold;border-radius:8px;cursor:pointer;transition:0.3s;}
+#feedbackForm button:hover{background:#1d4ed8;}
 </style>
 </head>
 <body>
@@ -177,7 +71,6 @@ background:#1d4ed8;
 <h1>Welcome Tourist</h1>
 <p>Tourist Safety Dashboard</p>
 
-<!-- STATS -->
 <div class="stats">
 <div class="stat-box">
 <h3>Total Incidents</h3>
@@ -187,13 +80,8 @@ background:#1d4ed8;
 <h3>Total Tourists</h3>
 <h2 id="touristCount">0</h2>
 </div>
-<div class="stat-box">
-<h3>Active Alerts</h3>
-<h2 id="alertCount">0</h2>
-</div>
 </div>
 
-<!-- SERVICES -->
 <div class="cards">
 <div class="card" onclick="location.href='map.html'">
 <h3>🗺 Tourist Map</h3>
@@ -212,7 +100,6 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- FEEDBACK FORM -->
 <div id="feedbackForm">
 <h2>Feedback & Ratings</h2>
 <form id="feedbackFormEl">
@@ -237,33 +124,68 @@ background:#1d4ed8;
 </div>
 
 <script>
-/* FETCH STATS (demo static for now, replace with API) */
-document.getElementById("incidentCount").innerText = 12;
-document.getElementById("touristCount").innerText = 45;
-document.getElementById("alertCount").innerText = 3;
-
-/* SHOW FEEDBACK */
-function showFeedbackForm(){
-document.getElementById("feedbackForm").style.display = "block";
-window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+// -------- DASHBOARD JS (frontend + API calls placeholder) --------
+async function fetchCounts() {
+    try {
+        const res = await fetch('/api/dashboard-counts');
+        const data = await res.json();
+        document.getElementById("incidentCount").innerText = data.total_incidents;
+        document.getElementById("touristCount").innerText = data.total_tourists;
+    } catch(err) { console.error(err); }
 }
 
-/* SUBMIT FEEDBACK */
-document.getElementById("feedbackFormEl").onsubmit = function(e){
-e.preventDefault();
-let feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
-let feedback = {
-name: this.querySelector('input').value,
-category: document.getElementById("feedbackCategory").value,
-rating: document.getElementById("feedbackRating").value,
-comment: this.querySelector('textarea').value,
-time: new Date().toLocaleString()
-};
-feedbacks.push(feedback);
-localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
-alert("Feedback submitted successfully!");
-this.reset();
+async function incrementTourist() {
+    try {
+        await fetch('/api/increment-tourist', { method:'POST' });
+        fetchCounts();
+    } catch(err) { console.error(err); }
 }
+
+window.onload = function() {
+    incrementTourist();
+    startSharingLocation('TOURIST123');
+}
+
+document.getElementById("feedbackFormEl").onsubmit = async function(e){
+    e.preventDefault();
+    let feedback = {
+        name: this.querySelector('input').value,
+        category: document.getElementById("feedbackCategory").value,
+        rating: document.getElementById("feedbackRating").value,
+        comment: this.querySelector('textarea').value,
+        time: new Date().toISOString()
+    };
+    let feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
+    feedbacks.push(feedback);
+    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+    await fetch('/api/increment-incident', { method:'POST' });
+    fetchCounts();
+    alert("Feedback submitted successfully!");
+    this.reset();
+}
+
+// -------- LIVE LOCATION --------
+let watchId;
+function startSharingLocation(touristId){
+    if(!navigator.geolocation) return alert("Geolocation not supported");
+    watchId = navigator.geolocation.watchPosition(
+        (pos)=>{
+            fetch("/api/update-location", {
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    touristId,
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                    timestamp: new Date().toISOString()
+                })
+            });
+        }, (err)=>console.error(err),
+        {enableHighAccuracy:true, maximumAge:0, timeout:5000}
+    );
+}
+function stopSharing(){ if(watchId) navigator.geolocation.clearWatch(watchId); }
+function showFeedbackForm(){document.getElementById("feedbackForm").style.display="block"; window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
 </script>
 
 </body>

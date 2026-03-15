@@ -1,0 +1,26 @@
+-- Users / Tourists table
+CREATE TABLE IF NOT EXISTS tourists (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Incidents table
+CREATE TABLE IF NOT EXISTS incidents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    category TEXT,
+    rating INTEGER,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Location table
+CREATE TABLE IF NOT EXISTS locations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tourist_id INTEGER,
+    latitude REAL,
+    longitude REAL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tourist_id) REFERENCES tourists(id)
+);

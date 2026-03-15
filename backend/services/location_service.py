@@ -1,9 +1,12 @@
-from models.location_model import LocationModel
-from services.geo_fencing_service import GeoFencingService
+from models.location_model import Location
+from database.db_connection import get_db
 
-class LocationService:
-    @staticmethod
-    def update_location(tourist_id, lat, lng):
-        loc_id = LocationModel.add_location(tourist_id, lat, lng)
-        GeoFencingService.check_location(tourist_id, lat, lng)
-        return loc_id
+def save_location(tourist_id, lat, lon, timestamp):
+    conn = get_db()
+    cursor = conn.cursor()
+    # Insert or update latest location
+    cursor.execute("""
+        INSERT INTO locations (tourist_id, latitude, longitude, timestamp)
+        VALUES (?, ?, ?, ?)
+    """, (tourist_id, lat, lon, timestamp))
+    conn.commit()

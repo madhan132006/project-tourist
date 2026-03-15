@@ -1,27 +1,19 @@
-from utils.db_connection import get_db_connection
+from database.db_connection import get_db_connection
 
-def create_user(email,wallet):
-
+def get_total_tourists():
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM users")
+    total = cur.fetchone()[0]
+    conn.close()
+    return total
 
-    cursor.execute(
-    "INSERT INTO users(email,wallet_address) VALUES (?,?)",
-    (email,wallet)
+def add_tourist(name):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO users (name, created_at) VALUES (?, datetime('now'))",
+        (name,)
     )
-
     conn.commit()
     conn.close()
-
-
-def count_users():
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT COUNT(*) FROM users")
-    count = cursor.fetchone()[0]
-
-    conn.close()
-
-    return count

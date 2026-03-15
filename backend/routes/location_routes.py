@@ -1,8 +1,13 @@
-from flask import Blueprint
-from controllers.location_controller import update_location, get_locations
-from middleware.auth_middleware import require_auth
+from flask import Blueprint, request, jsonify
+from database.database import get_db
 
-location_bp = Blueprint('locations', __name__)
+location_bp = Blueprint('location', __name__)
 
-location_bp.route('/', methods=['POST'])(require_auth()(update_location))
-location_bp.route('/', methods=['GET'])(require_auth(['admin'])(get_locations))
+@location_bp.route("/update-location", methods=["POST"])
+def update_location():
+    data = request.json
+    db = get_db()
+    db.execute("INSERT INTO locations (tourist_id, latitude, longitude, timestamp) VALUES (?, ?, ?, ?)",
+               (data["touristId"], data["latitude"], data["longitude"], data["timestamp"]))
+    db.commit()
+    return jsonify({"message": "Location updated"}), 201

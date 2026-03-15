@@ -1,48 +1,19 @@
-from utils.db_connection import get_db_connection
+from database.db_connection import get_db_connection
 
-def create_incident(data,block_hash):
-
+def get_total_incidents():
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM incidents")
+    total = cur.fetchone()[0]
+    conn.close()
+    return total
 
-    cursor.execute("""
-    INSERT INTO incidents
-    (type,description,location,latitude,longitude,blockchain_hash)
-    VALUES (?,?,?,?,?,?)
-    """,(
-        data["type"],
-        data["description"],
-        data["location"],
-        data["latitude"],
-        data["longitude"],
-        block_hash
-    ))
-
+def add_incident(name, category, comment):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO incidents (name, category, comment, created_at) VALUES (?, ?, ?, datetime('now'))",
+        (name, category, comment)
+    )
     conn.commit()
     conn.close()
-
-
-def count_incidents():
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT COUNT(*) FROM incidents")
-    count = cursor.fetchone()[0]
-
-    conn.close()
-
-    return count
-
-
-def count_active_incidents():
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT COUNT(*) FROM incidents WHERE status='active'")
-    count = cursor.fetchone()[0]
-
-    conn.close()
-
-    return count

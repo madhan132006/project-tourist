@@ -1,26 +1,12 @@
-from flask import request, jsonify
-from utils.db_connection import get_db_connection
+from flask import jsonify
+from services.incident_service import increment_incident, get_total_incidents
 
-def report_incident():
+# Increment incident count (called when feedback/report submitted)
+def increment_incident_controller():
+    new_count = increment_incident()
+    return jsonify({"total_incidents": new_count}), 200
 
-    data = request.json
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    INSERT INTO incidents
-    (type,description,location,latitude,longitude,status)
-    VALUES (?,?,?,?,?,'active')
-    """,(
-        data["type"],
-        data["description"],
-        data["location"],
-        data["latitude"],
-        data["longitude"]
-    ))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({"message":"Incident stored successfully"})
+# Get total incidents
+def get_incident_count_controller():
+    total = get_total_incidents()
+    return jsonify({"total_incidents": total}), 200

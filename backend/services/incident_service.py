@@ -1,16 +1,20 @@
-import hashlib
-import json
-from models import incident_model
+from database.db_connection import get_db
 
-def store_incident(data):
+def increment_incident():
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Assuming we have 'incidents' table with 'count' column
+    cursor.execute("INSERT INTO incidents DEFAULT VALUES")  # one row per incident
+    conn.commit()
+    
+    cursor.execute("SELECT COUNT(*) FROM incidents")
+    total = cursor.fetchone()[0]
+    return total
 
-    # Blockchain style hash
-    incident_string = json.dumps(data)
-
-    block_hash = hashlib.sha256(
-        incident_string.encode()
-    ).hexdigest()
-
-    incident_model.create_incident(data,block_hash)
-
-    return block_hash
+def get_total_incidents():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM incidents")
+    total = cursor.fetchone()[0]
+    return total
