@@ -1,160 +1,450 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Tourist Safety System — Safe Travel, Smart City</title>
+  <meta name="description" content="AI-powered tourist safety monitoring with blockchain incident logging, geo-fencing alerts, and live emergency response." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Landing-specific */
+    .hero-section { background: var(--grad-hero); }
 
-<title>Smart Tourist Safety System</title>
-<link rel="stylesheet" href="style.css">
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      animation: slideDown 0.6s ease both;
+    }
 
-<style>
+    .hero-title {
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, #93c5fd 50%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1.5rem;
+      animation: slideUp 0.7s 0.1s ease both;
+    }
 
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-}
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+      animation: slideUp 0.7s 0.2s ease both;
+    }
 
-/* BACKGROUND */
+    .hero-cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: slideUp 0.7s 0.3s ease both;
+    }
 
-.hero{
+    .hero-visual {
+      margin-top: 3.5rem;
+      position: relative;
+      animation: slideUp 0.8s 0.4s ease both;
+    }
 
-height:100vh;
+    .hero-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-background:
-linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-url("https://images.unsplash.com/photo-1501785888041-af3ef285b470");
+    .hero-mini-card {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
 
-background-size:cover;
-background-position:center;
+    .hero-mini-card:hover { transform: translateY(-6px); }
+    .hero-mini-card .mini-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+    .hero-mini-card .mini-val { font-size: 1.5rem; font-weight: 800; color: white; }
+    .hero-mini-card .mini-lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-display:flex;
-flex-direction:column;
-}
+    /* Stats */
+    .stats-section {
+      background: var(--bg-surface);
+      padding: 5rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .counter {
+      font-size: 3.5rem;
+      font-weight: 900;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: block;
+      line-height: 1;
+    }
 
-/* NAVBAR */
+    /* Features */
+    .features-section {
+      padding: 5rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
 
-header{
+    /* How it works */
+    .steps-section {
+      background: var(--bg-surface);
+      padding: 5rem 2rem;
+    }
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: var(--grad-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
 
-display:flex;
-justify-content:space-between;
-align-items:center;
+    /* Footer */
+    footer {
+      background: var(--bg-base);
+      border-top: 1px solid var(--glass-border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      position: relative;
+      z-index: 1;
+    }
 
-padding:20px 60px;
-color:white;
+    /* Navbar landing */
+    .land-nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 3rem;
+    }
 
-}
-
-header h2{
-font-size:26px;
-}
-
-nav a{
-
-margin-left:25px;
-text-decoration:none;
-color:white;
-font-weight:bold;
-font-size:16px;
-
-}
-
-nav a:hover{
-color:#38bdf8;
-}
-
-/* CENTER CONTENT */
-
-.content{
-
-flex:1;
-
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-
-text-align:center;
-color:white;
-
-}
-
-.content h1{
-
-font-size:55px;
-margin-bottom:10px;
-
-}
-
-.content p{
-
-font-size:20px;
-margin-bottom:35px;
-
-}
-
-.btn{
-
-padding:15px 35px;
-
-background:#38bdf8;
-border:none;
-border-radius:30px;
-
-font-size:18px;
-color:white;
-
-cursor:pointer;
-
-transition:0.3s;
-
-}
-
-.btn:hover{
-
-background:#0284c7;
-transform:scale(1.05);
-
-}
-
-</style>
-
+    @media (max-width: 768px) {
+      .hero-card-grid { grid-template-columns: 1fr; max-width: 300px; }
+      .land-nav { padding: 1.25rem 1.5rem; }
+      .land-nav .navbar-nav { display: none; }
+    }
+    @media (max-width: 480px) {
+      .hero-card-grid { grid-template-columns: repeat(2, 1fr); max-width: 350px; }
+    }
+  </style>
 </head>
-
 <body>
+  <!-- Particle Background -->
+  <div class="particles" id="particles"></div>
 
-<div class="hero">
+  <!-- LANDING NAVBAR -->
+  <header class="land-nav" role="banner">
+    <a href="index.html" class="navbar-brand" aria-label="Smart Tourist Safety System home">
+      <div class="logo-icon">🛡️</div>
+      <span class="logo-text">Tourist Safety</span>
+    </a>
+    <nav class="navbar-nav" aria-label="Main navigation">
+      <a href="index.html" class="active">Home</a>
+      <a href="register.html">Register</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="map.html">Live Map</a>
+      <a href="chatbot.html">AI Assistant</a>
+      <a href="emergency.html">Emergency</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:0.875rem;">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme"></button>
+      <a href="register.html" class="btn btn-sm btn-primary">Get Started</a>
+    </div>
+  </header>
 
-<header>
+  <!-- HERO SECTION -->
+  <section class="hero-section" aria-label="Hero section">
+    <div class="hero-body" style="padding-top:6rem;">
+      <div class="hero-badge">
+        <span>🌐</span>
+        Smart City Safety Platform — v2.0
+      </div>
+      <h1 class="hero-title">
+        Your Safety,<br>Our Priority
+      </h1>
+      <p class="hero-subtitle">
+        AI-powered tourist safety monitoring with real-time geo-fencing alerts, blockchain incident logs, and 24/7 emergency response coordination.
+      </p>
+      <div class="hero-cta-group">
+        <a href="register.html" class="btn btn-primary btn-lg">🚀 Register Now</a>
+        <a href="dashboard.html" class="btn btn-ghost btn-lg">📊 View Dashboard</a>
+      </div>
 
-<h2>🌍 Tourist Safety</h2>
+      <!-- Hero Mini Cards -->
+      <div class="hero-visual">
+        <div class="hero-card-grid">
+          <div class="hero-mini-card">
+            <span class="mini-icon">🤖</span>
+            <div class="mini-val">AI</div>
+            <div class="mini-lbl">Risk Prediction</div>
+          </div>
+          <div class="hero-mini-card" style="border-color:rgba(16,185,129,0.3);">
+            <span class="mini-icon">🔗</span>
+            <div class="mini-val" style="color:#34d399;">BC</div>
+            <div class="mini-lbl">Blockchain Logs</div>
+          </div>
+          <div class="hero-mini-card" style="border-color:rgba(239,68,68,0.3);">
+            <span class="mini-icon">🆘</span>
+            <div class="mini-val" style="color:#fca5a5;">SOS</div>
+            <div class="mini-lbl">Live Alerts</div>
+          </div>
+          <div class="hero-mini-card" style="border-color:rgba(245,158,11,0.3);">
+            <span class="mini-icon">🗺️</span>
+            <div class="mini-val" style="color:#fcd34d;">GEO</div>
+            <div class="mini-lbl">Geo-Fencing</div>
+          </div>
+          <div class="hero-mini-card" style="border-color:rgba(139,92,246,0.3);">
+            <span class="mini-icon">💬</span>
+            <div class="mini-val" style="color:#c4b5fd;">24/7</div>
+            <div class="mini-lbl">AI Chatbot</div>
+          </div>
+          <div class="hero-mini-card" style="border-color:rgba(6,182,212,0.3);">
+            <span class="mini-icon">🏥</span>
+            <div class="mini-val" style="color:#67e8f9;">ER</div>
+            <div class="mini-lbl">Emergency</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<nav>
+    <!-- Scroll Indicator -->
+    <div style="text-align:center;padding-bottom:2rem;animation:pulse 2s infinite;position:relative;z-index:2;">
+      <span style="color:var(--text-muted);font-size:1.5rem;">↓</span>
+    </div>
+  </section>
 
-<a href="index.html">Home</a>
-<a href="login.html">Login</a>
-<a href="dashboard.html">Dashboard</a>
-<a href="map.html">Map</a>
-<a href="report.html">Report</a>
-<a href="sos.html">SOS</a>
+  <!-- STATS SECTION -->
+  <section class="stats-section" aria-label="Impact statistics">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="reveal" style="font-size:2rem;">Trusted By Tourists Worldwide</h2>
+        <p class="text-secondary reveal" style="margin-top:0.5rem;">Real-time data from our global safety network</p>
+      </div>
+      <div class="stats-strip">
+        <div class="card stat-card reveal">
+          <span class="stat-icon">🌍</span>
+          <span class="counter" id="cnt1" data-target="128">0</span>
+          <div class="stat-label">Cities Covered</div>
+        </div>
+        <div class="card stat-card reveal">
+          <span class="stat-icon">👤</span>
+          <span class="counter" id="cnt2" data-target="47582">0</span>
+          <div class="stat-label">Tourists Protected</div>
+        </div>
+        <div class="card stat-card reveal">
+          <span class="stat-icon">✅</span>
+          <span class="counter" id="cnt3" data-target="3241">0</span>
+          <div class="stat-label">Incidents Resolved</div>
+        </div>
+        <div class="card stat-card reveal">
+          <span class="stat-icon">⚡</span>
+          <span class="counter" id="cnt4" data-target="4">0</span>
+          <div class="stat-label">Min Avg Response</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-</nav>
+  <!-- FEATURES SECTION -->
+  <section class="features-section" aria-label="System features">
+    <div class="container">
+      <div class="text-center mb-4">
+        <span class="badge badge-primary mb-2" style="font-size:0.75rem;">⚙️ FEATURES</span>
+        <h2 class="reveal" style="font-size:2rem;margin-top:0.75rem;">Everything You Need to Stay Safe</h2>
+        <p class="text-secondary reveal">Powered by cutting-edge AI and blockchain technology</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon" style="background:rgba(59,130,246,0.15);">🤖</div>
+          <h3>AI Risk Prediction</h3>
+          <p>Machine learning models analyze location data, historical incidents, and real-time feeds to predict and prevent risks before they occur.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon" style="background:rgba(16,185,129,0.15);">🔗</div>
+          <h3>Blockchain Incident Logs</h3>
+          <p>Every incident is cryptographically hashed and chained ensuring tamper-proof, transparent, and auditable safety records.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon" style="background:rgba(239,68,68,0.15);">🆘</div>
+          <h3>One-Tap SOS Alert</h3>
+          <p>Instantly notify authorities with your exact GPS coordinates. Real-time status tracking from dispatch to resolution.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon" style="background:rgba(245,158,11,0.15);">🗺️</div>
+          <h3>Live Safety Map</h3>
+          <p>Interactive map showing danger zones, police stations, hospitals, and tourist locations — all updated in real-time.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon" style="background:rgba(139,92,246,0.15);">💬</div>
+          <h3>AI Safety Chatbot</h3>
+          <p>24/7 conversational AI assistant that provides travel safety tips, route recommendations, and emergency guidance.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon" style="background:rgba(6,182,212,0.15);">🛡️</div>
+          <h3>Digital ID Verification</h3>
+          <p>Secure passport and ID verification with encrypted storage ensuring your personal data stays protected at all times.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-</header>
+  <!-- HOW IT WORKS -->
+  <section class="steps-section" aria-label="How it works">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="reveal" style="font-size:2rem;">How It Works</h2>
+        <p class="text-secondary reveal">Four simple steps to complete protection</p>
+      </div>
+      <div style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:2rem;">
+        <div class="flex gap-2 items-center reveal">
+          <div class="step-number">1</div>
+          <div class="card" style="flex:1;padding:1.25rem;">
+            <h3 style="margin-bottom:0.5rem;font-size:1rem;">Register Your Profile</h3>
+            <p class="text-secondary text-sm">Create your tourist account with passport details and emergency contacts.</p>
+          </div>
+        </div>
+        <div class="flex gap-2 items-center reveal">
+          <div class="step-number">2</div>
+          <div class="card" style="flex:1;padding:1.25rem;">
+            <h3 style="margin-bottom:0.5rem;font-size:1rem;">Enable Location Services</h3>
+            <p class="text-secondary text-sm">Share your real-time location for geo-fencing alerts and safety monitoring.</p>
+          </div>
+        </div>
+        <div class="flex gap-2 items-center reveal">
+          <div class="step-number">3</div>
+          <div class="card" style="flex:1;padding:1.25rem;">
+            <h3 style="margin-bottom:0.5rem;font-size:1rem;">Get AI Safety Insights</h3>
+            <p class="text-secondary text-sm">Receive personalized safety scores and route recommendations from our AI.</p>
+          </div>
+        </div>
+        <div class="flex gap-2 items-center reveal">
+          <div class="step-number">4</div>
+          <div class="card" style="flex:1;padding:1.25rem;">
+            <h3 style="margin-bottom:0.5rem;font-size:1rem;">Stay Protected 24/7</h3>
+            <p class="text-secondary text-sm">Our system monitors your safety and can alert authorities instantly if needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- CTA SECTION -->
+  <section style="padding:5rem 2rem;text-align:center;position:relative;z-index:1;" aria-label="Call to action">
+    <div class="container">
+      <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));border-color:rgba(59,130,246,0.3);padding:3.5rem 2rem;">
+        <h2 class="reveal" style="font-size:2.25rem;">Ready to Travel Safely?</h2>
+        <p class="text-secondary reveal mt-2" style="font-size:1.05rem;">Join thousands of tourists protected by our smart safety system.</p>
+        <div class="flex justify-center gap-2 mt-4 reveal" style="flex-wrap:wrap;">
+          <a href="register.html" class="btn btn-primary btn-lg">🚀 Get Started — It's Free</a>
+          <a href="chatbot.html" class="btn btn-ghost btn-lg">💬 Ask AI Assistant</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div class="content">
+  <!-- FOOTER -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+        <div class="navbar-brand" style="text-decoration:none;">
+          <div class="logo-icon" style="width:32px;height:32px;font-size:1rem;">🛡️</div>
+          <span class="logo-text">Smart Tourist Safety System</span>
+        </div>
+        <nav style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+          <a href="register.html" style="color:var(--text-muted);text-decoration:none;font-size:0.875rem;">Register</a>
+          <a href="map.html" style="color:var(--text-muted);text-decoration:none;font-size:0.875rem;">Live Map</a>
+          <a href="chatbot.html" style="color:var(--text-muted);text-decoration:none;font-size:0.875rem;">AI Assistant</a>
+          <a href="emergency.html" style="color:var(--text-muted);text-decoration:none;font-size:0.875rem;">Emergency</a>
+          <a href="blockchain.html" style="color:var(--text-muted);text-decoration:none;font-size:0.875rem;">Blockchain Log</a>
+        </nav>
+      </div>
+      <p>© 2026 Smart Tourist Safety System. Built with AI 🤖 & Blockchain 🔗 for safer travel.</p>
+    </div>
+  </footer>
 
-<h1>Smart Tourist Safety System</h1>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-<p>
-AI Monitoring • Geo-Fencing • Blockchain Security
-</p>
+  <script src="js/utils.js"></script>
+  <script>
+    // Generate particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 80 + 20;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        animation-duration:${Math.random()*20+15}s;
+        animation-delay:${Math.random()*15}s;
+        opacity:${Math.random()*0.4+0.05};
+      `;
+      particlesContainer.appendChild(p);
+    }
 
-<a href="login.html">
-<button class="btn">Get Started</button>
-</a>
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => obs.observe(el));
 
-</div>
+    // Animated counters
+    function animateCounter(el) {
+      const target = parseInt(el.dataset.target);
+      const duration = 2200;
+      const step = target / (duration / 16);
+      let current = 0;
+      const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = Math.floor(current).toLocaleString();
+        if (current >= target) clearInterval(timer);
+      }, 16);
+    }
 
-</div>
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCounter(e.target);
+          counterObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
 
+    document.querySelectorAll('.counter').forEach(c => counterObs.observe(c));
+  </script>
 </body>
 </html>

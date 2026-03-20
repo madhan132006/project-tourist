@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blockchain Incident Log — Smart Tourist Safety System</title>
+  <meta name="description" content="Tamper-proof blockchain incident log with cryptographic hash chaining for safety records." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--glass-bg); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border); position: sticky; top: 0;
+      z-index: 150; margin-left: var(--sidebar-width);
+    }
+    .bc-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+    }
+    .blockchain-chain {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: relative;
+    }
+    .block-item {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all var(--transition);
+      position: relative;
+      animation: slideUp 0.4s ease both;
+    }
+    .block-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(59,130,246,0.15);
+      transform: translateX(4px);
+    }
+    .block-header {
+      padding: 1.25rem 1.5rem;
+      background: rgba(59,130,246,0.08);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .block-number {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .block-num-badge {
+      background: var(--grad-primary);
+      color: white;
+      padding: 0.35rem 0.875rem;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .block-body {
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .block-field-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+    .chain-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      opacity: 0.7;
+      margin: -1rem 0;
+      position: relative;
+      z-index: 5;
+    }
+    .chain-link-icon { font-size: 1.3rem; }
+
+    /* Genesis block */
+    .genesis .block-header { background: rgba(16,185,129,0.1); border-bottom-color: rgba(16,185,129,0.2); }
+    .genesis .block-num-badge { background: var(--grad-success); }
+
+    /* Add block form */
+    .add-block-panel { padding: 1.5rem; }
+
+    .verify-result {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .verify-valid { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); display: flex; }
+    .verify-invalid { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); display: flex; }
+
+    @media (max-width: 900px) { .bc-layout { grid-template-columns: 1fr; } .block-body { grid-template-columns: 1fr; } .top-bar { margin-left: 0; } }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🛡️</div>
+      <div><div class="brand-text">Tourist Safety</div><div class="brand-sub">Smart City System v2.0</div></div>
+    </div>
+    <div class="sidebar-section-label">Main</div>
+    <nav class="sidebar-nav">
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="map.html"><span class="nav-icon">🗺️</span> Live Map</a>
+      <a href="chatbot.html"><span class="nav-icon">🤖</span> AI Assistant</a>
+    </nav>
+    <div class="sidebar-section-label">Safety</div>
+    <nav class="sidebar-nav">
+      <a href="emergency.html"><span class="nav-icon">🆘</span> Emergency SOS <span class="nav-badge">!</span></a>
+      <a href="blockchain.html" class="active"><span class="nav-icon">🔗</span> Blockchain Log</a>
+    </nav>
+    <div class="sidebar-section-label">Account</div>
+    <nav class="sidebar-nav"><a href="register.html"><span class="nav-icon">👤</span> Profile</a></nav>
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span class="text-xs text-muted">Dark Mode</span>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none;border:none;color:var(--text-primary);font-size:1.3rem;cursor:pointer;">☰</button>
+      <h1 style="font-size:1.2rem;font-weight:700;">🔗 Blockchain Incident Log</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div class="badge badge-success" id="chainStatus">✅ Chain Valid</div>
+      <a href="emergency.html" class="btn btn-danger btn-sm">🆘 SOS</a>
+    </div>
+  </div>
+
+  <main class="main-content" style="margin-top:0;">
+    <!-- Chain Stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;" id="chainStatsGrid">
+      <div class="card stat-card" style="padding:1.25rem;animation:slideUp 0.3s both;">
+        <span class="stat-icon" style="font-size:1.75rem;">🔗</span>
+        <div class="stat-value" id="blockCount" style="font-size:2rem;">—</div>
+        <div class="stat-label">Total Blocks</div>
+      </div>
+      <div class="card stat-card" style="padding:1.25rem;animation:slideUp 0.3s 0.1s both;border-top-color:#10b981;">
+        <span class="stat-icon" style="font-size:1.75rem;">✅</span>
+        <div class="stat-value" id="validCount" style="font-size:2rem;background:var(--grad-success);-webkit-background-clip:text;background-clip:text;color:transparent;">—</div>
+        <div class="stat-label">Valid Blocks</div>
+      </div>
+      <div class="card stat-card" style="padding:1.25rem;animation:slideUp 0.3s 0.2s both;border-top-color:#8b5cf6;">
+        <span class="stat-icon" style="font-size:1.75rem;">📋</span>
+        <div class="stat-value" id="incidentCount" style="font-size:2rem;background:linear-gradient(135deg,#8b5cf6,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent;">—</div>
+        <div class="stat-label">Incidents</div>
+      </div>
+      <div class="card stat-card" style="padding:1.25rem;animation:slideUp 0.3s 0.3s both;border-top-color:#f59e0b;">
+        <span class="stat-icon" style="font-size:1.75rem;">🕐</span>
+        <div class="stat-value" id="lastBlock" style="font-size:1.2rem;background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent;">—</div>
+        <div class="stat-label">Last Block Time</div>
+      </div>
+    </div>
+
+    <div class="bc-layout">
+      <!-- Chain -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="section-title" style="margin-bottom:0;">Incident Chain</h2>
+          <button class="btn btn-secondary btn-sm" onclick="loadBlockchain()">🔄 Refresh</button>
+        </div>
+        <div class="blockchain-chain" id="blockchainChain">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Side Panel -->
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        <!-- Add Record -->
+        <div class="card add-block-panel">
+          <div class="section-title" style="font-size:1rem;">➕ Add Incident Record</div>
+          <div class="form-group">
+            <label class="form-label">Record Type</label>
+            <select class="form-control" id="recType">
+              <option value="INCIDENT">Incident Report</option>
+              <option value="EMERGENCY">Emergency Alert</option>
+              <option value="SAFETY_LOG">Safety Log</option>
+              <option value="FRAUD">Fraud/Scam</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-control" id="recLocation" placeholder="City, Street..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Incident Data</label>
+            <textarea class="form-control" id="recData" rows="3" placeholder="Describe the incident..."></textarea>
+          </div>
+          <button class="btn btn-primary w-full" onclick="addBlock()">🔗 Add to Blockchain</button>
+        </div>
+
+        <!-- Verify Chain -->
+        <div class="card add-block-panel">
+          <div class="section-title" style="font-size:1rem;">🔍 Verify Chain Integrity</div>
+          <p class="text-secondary text-sm" style="margin-bottom:1rem;">Cryptographically verify that no blocks have been tampered with.</p>
+          <button class="btn btn-success w-full" onclick="verifyChain()">✅ Verify All Blocks</button>
+          <div id="verifyResult" class="verify-result"></div>
+        </div>
+
+        <!-- Info -->
+        <div class="card" style="padding:1.25rem;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1));border-color:rgba(59,130,246,0.25);">
+          <div class="section-title" style="font-size:0.9rem;">ℹ️ How It Works</div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div class="flex gap-1 items-center text-sm"><span>🔢</span><span class="text-secondary">Each block has a unique SHA-style hash</span></div>
+            <div class="flex gap-1 items-center text-sm"><span>🔗</span><span class="text-secondary">Previous hash links blocks in a chain</span></div>
+            <div class="flex gap-1 items-center text-sm"><span>🔒</span><span class="text-secondary">Altering any block breaks all subsequent hashes</span></div>
+            <div class="flex gap-1 items-center text-sm"><span>⏱️</span><span class="text-secondary">Timestamps prevent back-dating of records</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/blockchain.js"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency Alert System — Smart Tourist Safety System</title>
+  <meta name="description" content="One-tap emergency SOS alert system with real-time location tracking and authority notification." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: var(--glass-bg); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border); position: sticky; top: 0;
+      z-index: 150; margin-left: var(--sidebar-width);
+    }
+    .emerg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .sos-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .sos-ring-outer {
+      width: 240px; height: 240px; border-radius: 50%;
+      background: rgba(239,68,68,0.08);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    .sos-ring-outer::before, .sos-ring-outer::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(239,68,68,0.4);
+      animation: sosPulseRing 2.4s infinite;
+    }
+    .sos-ring-outer::before { inset: -12px; }
+    .sos-ring-outer::after  { inset: -28px; animation-delay: 0.6s; border-color: rgba(239,68,68,0.2); }
+
+    .sos-btn-main {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: var(--grad-danger);
+      border: 6px solid rgba(255,255,255,0.15);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      box-shadow: 0 0 60px rgba(239,68,68,0.4), 0 0 0 0 rgba(239,68,68,0.7);
+      animation: sosPulse 2s infinite;
+      transition: all 0.2s;
+    }
+    .sos-btn-main:hover { transform: scale(1.05); box-shadow: 0 0 80px rgba(239,68,68,0.6); }
+    .sos-btn-main:active { transform: scale(0.97); }
+    .sos-btn-main .sos-icon { font-size: 2.5rem; }
+    .sos-btn-main .sos-label { font-size: 1.5rem; letter-spacing: 4px; }
+    .sos-btn-main .sos-sub { font-size: 0.7rem; font-weight: 500; opacity: 0.8; letter-spacing: 1px; }
+
+    /* Status Timeline */
+    .status-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition);
+    }
+    .status-step.active { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); }
+    .status-step.done { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
+    .status-circle {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+      background: var(--glass-bg);
+      border: 2px solid var(--glass-border);
+      transition: all var(--transition);
+    }
+    .status-circle.active { background: var(--primary); border-color: var(--primary); color: white; }
+    .status-circle.done { background: var(--success); border-color: var(--success); color: white; }
+
+    .form-section { padding: 1.75rem; }
+
+    @media (max-width: 900px) { .emerg-grid { grid-template-columns: 1fr; } .top-bar { margin-left: 0; } }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🛡️</div>
+      <div><div class="brand-text">Tourist Safety</div><div class="brand-sub">Smart City System v2.0</div></div>
+    </div>
+    <div class="sidebar-section-label">Main</div>
+    <nav class="sidebar-nav">
+      <a href="index.html"><span class="nav-icon">🏠</span> Home</a>
+      <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="map.html"><span class="nav-icon">🗺️</span> Live Map</a>
+      <a href="chatbot.html"><span class="nav-icon">🤖</span> AI Assistant</a>
+    </nav>
+    <div class="sidebar-section-label">Safety</div>
+    <nav class="sidebar-nav">
+      <a href="emergency.html" class="active"><span class="nav-icon">🆘</span> Emergency SOS <span class="nav-badge">!</span></a>
+      <a href="blockchain.html"><span class="nav-icon">🔗</span> Blockchain Log</a>
+    </nav>
+    <div class="sidebar-section-label">Account</div>
+    <nav class="sidebar-nav"><a href="register.html"><span class="nav-icon">👤</span> Profile</a></nav>
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span class="text-xs text-muted">Dark Mode</span>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none;border:none;color:var(--text-primary);font-size:1.3rem;cursor:pointer;">☰</button>
+      <h1 style="font-size:1.2rem;font-weight:700;">🆘 Emergency Alert System</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div class="badge badge-danger" id="alertStatus">● Standby</div>
+    </div>
+  </div>
+
+  <main class="main-content" style="margin-top:0;">
+    <!-- Warning Banner -->
+    <div class="alert alert-danger" style="margin-bottom:1.5rem;">
+      <span>🚨</span>
+      <span>This system will immediately alert police and emergency services with your GPS location. Use only in genuine emergencies.</span>
+    </div>
+
+    <div class="emerg-grid">
+      <!-- SOS Panel -->
+      <div class="card" style="animation:scaleIn 0.5s ease;">
+        <div class="sos-center">
+          <div class="sos-ring-outer">
+            <button class="sos-btn-main" id="sosBtnMain" onclick="triggerSOS()" aria-label="Trigger emergency SOS alert">
+              <span class="sos-icon">🆘</span>
+              <span class="sos-label">SOS</span>
+              <span class="sos-sub">PRESS TO ALERT</span>
+            </button>
+          </div>
+          <h2 style="font-size:1.5rem;margin-bottom:0.5rem;">Emergency SOS</h2>
+          <p class="text-secondary text-sm" style="max-width:280px;margin-bottom:1.5rem;">Press the button to instantly alert all emergency services with your location.</p>
+
+          <!-- Location display -->
+          <div class="card" style="width:100%;padding:1rem;text-align:left;margin-bottom:1rem;">
+            <div class="flex items-center gap-1">
+              <span>📍</span>
+              <span class="text-sm font-bold">Current Location</span>
+              <span class="badge badge-success" style="margin-left:auto;font-size:0.65rem;" id="gpsStatus">Detecting...</span>
+            </div>
+            <div class="text-secondary text-sm mt-1" id="locDisplay">Acquiring GPS coordinates...</div>
+            <div class="text-xs text-muted" id="coordDisplay"></div>
+          </div>
+
+          <!-- Quick Type -->
+          <div style="width:100%;">
+            <label class="form-label">Emergency Type</label>
+            <select class="form-control" id="emergType">
+              <option value="general">General Emergency</option>
+              <option value="medical">Medical Emergency</option>
+              <option value="crime">Crime / Assault</option>
+              <option value="fire">Fire / Accident</option>
+              <option value="lost">Lost / Missing</option>
+              <option value="scam">Scam / Fraud</option>
+            </select>
+          </div>
+          <div style="width:100%;">
+            <label class="form-label">Description (optional)</label>
+            <textarea class="form-control" id="emergDesc" rows="2" placeholder="Brief description of emergency..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        <!-- Alert Status -->
+        <div class="card" style="padding:1.75rem;animation:slideUp 0.5s 0.2s both;">
+          <div class="section-title">📡 Alert Status</div>
+          <div style="display:flex;flex-direction:column;gap:0.625rem;" id="statusSteps">
+            <div class="status-step" id="ss1">
+              <div class="status-circle" id="sc1">1</div>
+              <div><div style="font-size:0.875rem;font-weight:600;">Alert Triggered</div><div class="text-xs text-muted">SOS button activated</div></div>
+            </div>
+            <div class="status-step" id="ss2">
+              <div class="status-circle" id="sc2">2</div>
+              <div><div style="font-size:0.875rem;font-weight:600;">Location Captured</div><div class="text-xs text-muted">GPS coordinates sent</div></div>
+            </div>
+            <div class="status-step" id="ss3">
+              <div class="status-circle" id="sc3">3</div>
+              <div><div style="font-size:0.875rem;font-weight:600;">Authorities Notified</div><div class="text-xs text-muted">Police/ambulance dispatched</div></div>
+            </div>
+            <div class="status-step" id="ss4">
+              <div class="status-circle" id="sc4">4</div>
+              <div><div style="font-size:0.875rem;font-weight:600;">Help Dispatched</div><div class="text-xs text-muted">ETA: ~4 minutes</div></div>
+            </div>
+          </div>
+          <div id="resolvedMsg" class="hidden" style="margin-top:1rem;">
+            <div class="badge badge-success" style="font-size:0.85rem;padding:0.5rem 1rem;">✅ Alert Resolved</div>
+          </div>
+        </div>
+
+        <!-- Emergency Contacts Quick -->
+        <div class="card" style="padding:1.75rem;animation:slideUp 0.5s 0.3s both;">
+          <div class="section-title">📞 Quick Dial</div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <button class="btn btn-danger" onclick="showToast('Dialing Police: 100...','info')">🚔 Police — 100</button>
+            <button class="btn btn-success" onclick="showToast('Dialing Ambulance: 102...','info')">🏥 Ambulance — 102</button>
+            <button class="btn btn-secondary" onclick="showToast('Dialing Fire: 101...','info')">🔥 Fire Brigade — 101</button>
+            <button class="btn btn-ghost" onclick="showToast('Dialing Tourist Helpline...','info')">🌍 Tourist Helpline</button>
+          </div>
+        </div>
+
+        <!-- Alert History -->
+        <div class="card" style="padding:1.75rem;animation:slideUp 0.5s 0.4s both;">
+          <div class="section-title">📋 Alert History</div>
+          <div id="alertHistory">
+            <div class="notif-item">
+              <span class="notif-icon">✅</span>
+              <div class="notif-body">
+                <h4>Alert #0047 — Resolved</h4>
+                <p>Medical • City Center • Mar 16, 2026</p>
+              </div>
+            </div>
+            <div class="notif-item">
+              <span class="notif-icon">✅</span>
+              <div class="notif-body">
+                <h4>Alert #0031 — Resolved</h4>
+                <p>Scam Report • Market St • Mar 10, 2026</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/emergency.js"></script>
+</body>
+</html>
